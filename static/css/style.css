@@ -1,0 +1,137 @@
+/* Fuente */
+body {
+  font-family: 'Inter', sans-serif;
+  margin: 0;
+  background: #f4f5f7;
+  color: #333;
+}
+
+/* Layout */
+.main-container {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 0 20px;
+}
+
+/* HEADER */
+.header {
+  background: white;
+  padding: 20px 40px;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.07);
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.logo {
+  height: 55px;
+}
+
+.header-title h1 {
+  font-size: 28px;
+  margin: 0;
+}
+
+.subtitle {
+  margin: 0;
+  font-size: 14px;
+  color: #777;
+}
+
+/* Tarjetas */
+.page-card {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  margin-top: 40px;
+}
+
+.form-card,
+.result-card,
+.alert-card {
+  background: white;
+  padding: 25px 30px;
+  border-radius: 14px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.07);
+}
+
+.section-title {
+  font-size: 24px;
+  font-weight: 700;
+  text-align: center;
+}
+
+label {
+  font-weight: 600;
+  margin-top: 10px;
+}
+
+input {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  margin-bottom: 15px;
+  font-size: 16px;
+}
+
+.btn-primary {
+  width: 100%;
+  padding: 12px;
+  background: #0051ff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.btn-primary:hover {
+  background: #003fcc;
+}
+
+/* Alerts */
+.alert-card {
+  border-left: 5px solid #ff9f00;
+}
+
+.warning {
+  background: #fff8e6;
+}
+
+/* Resultado */
+.result-card ul {
+  padding-left: 20px;
+}
+
+.result-card li {
+  margin-bottom: 6px;
+}
+
+.back-link {
+  display: inline-block;
+  margin-top: 12px;
+  color: #0051ff;
+  font-weight: 600;
+}
+
+/* Footer */
+.footer {
+  text-align: center;
+  margin-top: 50px;
+  padding: 20px 0;
+  color: #777;
+  font-size: 14px;
+}
+#preview {
+    width: 350px;         /* Tamaño fijo */
+    height: auto;         /* Mantiene proporción */
+    border-radius: 12px;
+    margin: 10px auto;
+    display: block;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}

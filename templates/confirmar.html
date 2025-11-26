@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Confirmar registro{% endblock %}
+{% block content %}
+  <section class="form-card">
+    <h2>✅ Confirmar registro</h2>
+
+    <p><strong>Documento:</strong> {{ documento }}</p>
+    <p><strong>Nombre:</strong> {{ nombre }}</p>
+    <p><strong>Celular:</strong> {{ celular }}</p>
+    <p><strong>codigo:</strong> {{ codigo }}</p>
+
+    {% if codigo_detectado %}
+      <p>✔ Código detectado: <strong>{{ codigo_detectado }}</strong></p>
+    {% endif %}
+    {% if codigo_escaneado %}
+      <p>✔ Código seleccionado: <strong>{{ codigo_escaneado }}</strong></p>
+    {% endif %}
+    {% if codigo_actual %}
+      <p>Código actual: <strong>{{ codigo_actual }}</strong></p>
+    {% endif %}
+
+    {% if already_doc %}
+      <div class="card">
+        <p>🚫 Este documento ya registró:</p>
+        <p>Código: <strong>{{ doc_row['datos escaneados'] }}</strong></p>
+        <p>Fecha: <strong>{{ doc_row['timestamp'] }}</strong></p>
+        
+      </div>
+      <p><a href="{{ url_for('index') }}">Volver al inicio</a></p>
+    {% elif code_used %}
+      <div class="card">
+        <p>🚫 Este código ya fue usado por {{ code_row['nombre completo'] }} (doc {{ code_row['documento'] }}) el {{ code_row['timestamp'] }}</p>
+      </div>
+      <p><a href="{{ url_for('scan') }}">Volver a escanear otro código</a></p>
+    {% else %}
+      <form method="post" action="{{ url_for('confirmar') }}">
+        
+        
+        
+      </form>
+
+      <form method="post" action="{{ url_for('confirmar') }}" style="margin-top:12px;">
+        <button type="submit" class="btn-primary" name="guardar">Guardar registro</button>
+      </form>
+
+      <p><a href="{{ url_for('scan') }}">Volver a escanear</a> · <a href="{{ url_for('index') }}">Cancelar</a></p>
+    {% endif %}
+  </section>
+{% endblock %}

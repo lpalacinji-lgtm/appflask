@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% block title %}Escanear{% endblock %}
+{% block content %}
+
+<section class="card">
+    <h2>📸 Escanear Código</h2>
+
+    <!-- Nombre y documento -->
+    <p><strong>Nombre:</strong> {{ nombre }}</p>
+    <p><strong>Documento:</strong> {{ documento }}</p>
+
+    <hr>
+
+    <!-- Video del escáner -->
+    <video id="preview" autoplay></video>
+
+
+    <p id="codigoDetectado" style="font-weight: bold; margin-top: 10px;"></p>
+</section>
+
+<hr>
+
+<!-- 🔥 FORMULARIO PARA INGRESAR CÓDIGO MANUAL -->
+<section class="card">
+    <h3>Ingresar código manual</h3>
+
+    <form id="manualForm">
+        <label for="manual_codigo">Si quieres, ingresa manualmente otro código:</label>
+        <input
+            id="manual_codigo"
+            name="manual_codigo"
+            maxlength="500"
+            placeholder="Escribe el código"
+            required
+        >
+
+        <button type="submit" class="btn-primary">Usar código manual</button>
+    </form>
+</section>
+
+<script src="https://unpkg.com/@zxing/library@latest"></script>
+
+<script>
+    const codeReader = new ZXing.BrowserBarcodeReader();
+    const videoElement = document.getElementById('preview');
+    const codigoText = document.getElementById('codigoDetectado');
+
+    // ==============================
+    // 🔥 ESCANER AUTOMATICO
+    // ==============================
+    codeReader.decodeFromVideoDevice(null, videoElement, (result, err) => {
+        if (result) {
+            const codigo = result.text;
+            codigoText.textContent = "Código detectado: " + codigo;
+
+            enviarCodigo(codigo);
+        }
+    });
+
+    // ==============================
+    // 🔥 ENVÍO DE CÓDIGO (auto o manual)
+    // ==============================
+    function enviarCodigo(codigo) {
+        fetch("/set-codigo", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ codigo: codigo })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.ok) {
+                window.location.href = "/confirmar";
+            } else {
+                alert("Error enviando código: " + data.error);
+            }
+        });
+    }
+
+    // ==============================
+    // 🔥 MANEJO DEL FORMULARIO MANUAL
+    // ==============================
+    document.getElementById("manualForm").addEventListener("submit", function(e) {
+        e.preventDefault();
+
+        const codigoManual = document.getElementById("manual_codigo").value.trim();
+
+        if (codigoManual.length === 0) {
+            alert("Ingresa un código válido.");
+            return;
+        }
+
+        enviarCodigo(codigoManual);
+    });
+</script>
+
+{% endblock %}

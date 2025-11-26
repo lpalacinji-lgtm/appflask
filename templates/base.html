@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <title>{% block title %}Formulario Escaneo{% endblock %}</title>
+
+  <!-- CSS global -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  
+  <!-- Fuente profesional -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+  <!-- =============== HEADER PROFESIONAL ================= -->
+  <header class="header">
+    <div class="header-content">
+
+      <!-- Logo -->
+      <img src="{{ url_for('static', filename='logo.png') }}" class="logo" alt="Logo">
+
+      <div class="header-title">
+        <h1>Formulario Escaneo</h1>
+        <p class="subtitle">Registro rápido, seguro y centralizado</p>
+      </div>
+
+    </div>
+  </header>
+  <!-- ===================================================== -->
+
+  
+  <!-- CONTENIDO PRINCIPAL -->
+  <main class="main-container">
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          <div class="flashes">
+          {% for category, msg in messages %}
+            <div class="flash flash-{{ category }}">{{ msg }}</div>
+          {% endfor %}
+          </div>
+        {% endif %}
+      {% endwith %}
+
+      {% block content %}{% endblock %}
+  </main>
+
+
+  <!-- =============== FOOTER ================= -->
+  <footer class="footer">
+    <p>© {{ current_year }} Sistema de Registro | Modo local</p>
+  </footer>
+
+</body>
+</html>

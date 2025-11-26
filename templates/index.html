@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Buscar documento{% endblock %}
+
+{% block content %}
+
+<div class="page-card">
+
+    {% if last_reg %}
+    <div class="alert-card warning">
+        <p>⚠️ <strong>Este documento YA registró un código previamente.</strong></p>
+    </div>
+    {% endif %}
+
+    <h2 class="section-title">📄 Buscar documento</h2>
+
+    <form method="post" action="{{ url_for('index') }}" class="form-card">
+        <label for="documento">Número de documento</label>
+        <input id="documento" name="documento" required maxlength="50" autofocus>
+        <button type="submit" class="btn-primary">Buscar</button>
+    </form>
+
+    {% if last_reg %}
+    <div class="result-card">
+        <h3>Registro previo</h3>
+        <ul>
+            <li><strong>Nombre:</strong> {{ last_reg.nombre }}</li>
+            <li><strong>Fecha:</strong> {{ last_reg.timestamp }}</li>
+            <li><strong>Código:</strong> {{ last_reg.codigo }}</li>
+        </ul>
+        <a class="back-link" href="{{ url_for('index') }}">Volver</a>
+    </div>
+    {% endif %}
+
+</div>
+
+{% endblock %}

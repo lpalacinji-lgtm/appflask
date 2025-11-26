@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Nuevo registro{% endblock %}
+{% block content %}
+  <section class="form-card">
+    <h2>📝 Registrar nuevo usuario</h2>
+    <form method="post" action="{{ url_for('nuevo_registro') }}">
+      <label>Documento</label>
+      <input value="{{ documento }}" disabled>
+      <label for="nombre">Nombre completo</label>
+      <input id="nombre" name="nombre" required maxlength="120">
+      <label for="celular">Celular</label>
+      <input id="celular" name="celular" required maxlength="20">
+      <button type="submit" class="btn-primary" >Guardar nuevo usuario</button>
+    </form>
+    <p><a href="{{ url_for('index') }}">Cancelar</a></p>
+  </section>
+{% endblock %}
