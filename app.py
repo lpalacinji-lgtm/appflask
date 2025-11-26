@@ -1,12 +1,11 @@
 import os
+import json
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from datetime import datetime
-import pytz
+from zoneinfo import ZoneInfo
 import gspread
 from google.oauth2.service_account import Credentials
 import pandas as pd
-
-
 
 # -------------------------
 # Configuración básica
@@ -15,20 +14,32 @@ app = Flask(__name__)
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", "cambia_esta_clave_por_una_muy_larga")
 
 # -------------------------
-# Credenciales Google Sheets
+# Credenciales Google Sheets DESDE VARIABLE DE ENTORNO
 # -------------------------
 GSHEET_SCOPES = [
     "https://www.googleapis.com/auth/spreadsheets",
     "https://www.googleapis.com/auth/drive"
 ]
 
-SERVICE_ACCOUNT_FILE = os.path.join(os.path.dirname(__file__), "credentials", "service_account.json")
-
 def get_gspread_client():
-    if not os.path.exists(SERVICE_ACCOUNT_FILE):
-        raise FileNotFoundError("No se encontró credentials/service_account.json.")
-    creds = Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=GSHEET_SCOPES)
-    return gspread.authorize(creds)
+    try:
+        raw_json = os.environ.get("GOOGLE_CREDENTIALS_JSON")
+
+        if not raw_json:
+            raise Exception("La variable de entorno GOOGLE_CREDENTIALS_JSON NO está definida.")
+
+        cred_dict = json.loads(raw_json)
+
+        creds = Credentials.from_service_account_info(
+            cred_dict,
+            scopes=GSHEET_SCOPES
+        )
+
+        client = gspread.authorize(creds)
+        return client
+
+    except Exception as e:
+        raise Exception(f"Error cargando credenciales: {e}")
 
 # -------------------------
 # Helper: cargar hojas y dataframes
@@ -74,7 +85,6 @@ def index():
             flash("Ingresa un número de documento.", "warning")
             return redirect(url_for("index"))
 
-        # Buscar en base de datos
         resultado = df_base[df_base["documento"].astype(str) == documento]
 
         if not resultado.empty:
@@ -83,7 +93,6 @@ def index():
             session["nombre"] = str(fila.get("nombre completo", ""))
             session["celular"] = str(fila.get("celular", ""))
 
-            # Ya registró
             if not df_reg.empty and documento in df_reg["documento"].astype(str).values:
                 fila_reg = df_reg[df_reg["documento"].astype(str) == documento].iloc[0]
                 flash("Este documento YA registró un código previamente.", "danger")
@@ -157,11 +166,8 @@ def scan():
 # -------------------------
 @app.route("/set-codigo", methods=["POST"])
 def set_codigo():
-    # Si viene del lector (ZXing)
     data = request.json or {}
     codigo = data.get("codigo")
-
-    # Si viene del formulario manual
     manual = request.form.get("manual_codigo")
 
     if manual:
@@ -172,7 +178,6 @@ def set_codigo():
 
     session["codigo_detectado"] = str(codigo)
     return {"ok": True}
-
 
 # -------------------------
 # Confirmar y guardar
@@ -193,20 +198,17 @@ def confirmar():
         celular = str(session.get("celular"))
         codigo_final = str(codigo)
 
-        # Validar duplicado
         if not df_reg.empty and documento in df_reg["documento"].astype(str).values:
             flash("Este documento ya tiene registro.", "danger")
             return redirect(url_for("index"))
 
-        # Validar código duplicado
         if not df_reg.empty and codigo_final in df_reg["datos escaneados"].astype(str).values:
             fila = df_reg[df_reg["datos escaneados"].astype(str) == codigo_final].iloc[0]
             flash(f"Este código ya fue usado por {fila.get('nombre completo')} ({fila.get('documento')})", "danger")
             return redirect(url_for("index"))
 
-        # Guardar
         try:
-            now = datetime.now(pytz.timezone("America/Bogota")).strftime("%Y-%m-%d %H:%M:%S")
+            now = datetime.now(ZoneInfo("America/Bogota")).strftime("%Y-%m-%d %H:%M:%S")
             reg_ws.append_row([now, documento, nombre, celular, codigo_final])
         except Exception as e:
             flash("Error guardando registro: " + str(e), "danger")
@@ -225,9 +227,6 @@ def confirmar():
     )
 
 # -------------------------
-# Run
+# Despliegue
 # -------------------------
-#if __name__ == "__main__":
-    #app.run(host="0.0.0.0", port=5000, debug=True)
-
-
+# Render ejecuta gunicorn automáticamente, NO activar debug aquí.
